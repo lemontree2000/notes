@@ -2,10 +2,19 @@
 
 > 非原创，在[青青子衿zz ](<https://www.cnblogs.com/zhanzhan/p/7729981.html>)、[浮尘的](https://www.cnblogs.com/rxbook/p/8110143.html)文章基础上整理的。
 
+目录
+===
+
+-  [安装MariaDB](#安装MariaDB)
+- [配置MariaDB的字符集](#配置MariaDB的字符集)
+- [开放防火墙端口](#开放防火墙端口)
+- [开启远程连接权限](#服务管理)
+	- [直接改root账号host（方法1）](#直接改root账号host（方法1）)
+	- [创建可登陆用户并给与特定权限（方法2）](#创建可登陆用户并给与特定权限（方法2）)
+
 ## 1、安装MariaDB
 
 安装命令
-
 ```bash
 yum -y install mariadb mariadb-server
 ```
@@ -57,14 +66,13 @@ Reload privilege tables now? [Y/n] <– 是否重新加载权限表，回车
 初始化MariaDB完成，接下来测试登录
 
 ```bash
-mysql -uroot -ppassword
+mysql -u root -p
 ```
 
 完成。
 
- ```
-
 ## 2、配置MariaDB的字符集
+
 
 文件/etc/my.cnf
 
@@ -189,4 +197,77 @@ firewall-cmd --permanent --zone=public --add-port=3306/tcp
 ```
 
 ## 4、开启远程连接权限
+登陆mysql数据库
+
+```bash
+mysql -u root -p
+```
+
+查看user表
+
+```mysql
+mysql> use mysql;
+Database changed
+MariaDB [mysql]> select host,user,password from user;
++-----------+------+-------------------------------------------+
+| host      | user | password                                  |
++-----------+------+-------------------------------------------+
+| localhost | root | *273FF523C1DDE30E1292B18A9F6119695F5436B6 |
+| 127.0.0.1 | root | *273FF523C1DDE30E1292B18A9F6119695F5436B6 |
+| ::1       | root | *273FF523C1DDE30E1292B18A9F6119695F5436B6 |
++-----------+------+-------------------------------------------+
+```
+
+在数据库`mysql` 中的`user`表中可以看到默认是只能本地连接的，所有可以添加一个用户
+
+#### 直接改root账号host（方法1）
+
+```mysql
+update user set host = 'localhost' where user = 'root';
+// 此提示不用管
+ERROR 1062 (23000): Duplicate entry 'localhost-root' for key 'PRIMARY'
+// 刷新权限
+flush privileges;
+
+```
+
+
+
+#### 创建可登陆用户并给与特定权限（方法2）
+
+语法
+
+```mysql
+CREATE USER 'username'@'host' IDENTIFIED BY 'password';
+```
+
+如上sql语句创建一个登陆账号，建议指定特定ip或发开发是开放%
+
+```mysql
+# 针对特定ip
+create user 'root'@'192.168.10.10' identified by 'password';
+
+# 开放全部
+ create user 'root'@'%' identified by 'password';
+```
+
+授权
+
+```mysql
+ # 给用户最大权限
+ grant all privileges on *.* to 'root'@'%' identified by 'password';
+ 
+ # 给部分权限(test 数据库)
+ grant all privileges on test.* to 'root'@'%' identified by 'password' with grant option;
+ 
+ # 刷新权限表
+ 
+ flush privileges;
+```
+
+成功后即可远程连接
+
+
+
+
 
