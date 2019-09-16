@@ -1,16 +1,16 @@
 # mariadb centos7 安装指南
 
-> 非原创，在[青青子衿zz ](<https://www.cnblogs.com/zhanzhan/p/7729981.html>)、[浮尘的](https://www.cnblogs.com/rxbook/p/8110143.html)文章基础上整理的。
+> 非原创，在[青青子衿zz ](<https://www.cnblogs.com/zhanzhan/p/7729981.html>)、[浮尘](https://www.cnblogs.com/rxbook/p/8110143.html)的文章基础上整理的。
 
 目录
 ===
 
--  [安装MariaDB](#安装MariaDB)
-- [配置MariaDB的字符集](#配置MariaDB的字符集)
-- [开放防火墙端口](#开放防火墙端口)
-- [开启远程连接权限](#服务管理)
-	- [直接改root账号host（方法1）](#直接改root账号host（方法1）)
-	- [创建可登陆用户并给与特定权限（方法2）](#创建可登陆用户并给与特定权限（方法2）)
+- [安装MariaDB](#1安装mariadb)
+- [配置MariaDB的字符集](#2配置mariadb的字符集)
+- [开放防火墙端口](#3开放防火墙端口)
+- [开启远程连接权限](4开启远程连接权限)
+	- [直接改root账号host（方法1）](#直接改root账号host方法1)
+	- [创建可登陆用户并给与特定权限（方法2）](#创建可登陆用户并给与特定权限方法2)
 
 ## 1、安装MariaDB
 
@@ -241,7 +241,7 @@ flush privileges;
 CREATE USER 'username'@'host' IDENTIFIED BY 'password';
 ```
 
-如上sql语句创建一个登陆账号，建议指定特定ip或发开发是开放%
+如上sql语句创建一个登陆账号，建议指定特定ip或在开发是开放%
 
 ```mysql
 # 针对特定ip
