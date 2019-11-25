@@ -181,7 +181,7 @@ MP3、MP4、WebM这些术语叫做**容器格式**。
 </video>
 ```
 
-* `width` 和 `height` 控制视频展示的区域大小，注意设置的时候控制**纵横比**
+* `width` 和 `height` 控制视频展示的区域大小，设置的时候注意控制**纵横比**
 * autoplay 视频自动播放
 * loop 视频循环播放
 * muted 关闭视频声音
@@ -200,13 +200,55 @@ MP3、MP4、WebM这些术语叫做**容器格式**。
 - `<video>`标签不支持 `width`/`height` 属性 — 由于其并没有视觉部件，也就没有可以设置 `width`/`height` 的内容。
 - 同时也不支持 `poster` 属性 — 同样，没有视觉部件。
 
-### 显示音轨文本
+### 显示音轨文本 （字幕）
 
 > 提供给不能听到声音或者不想听到的人使用，更容易理解媒体内容。
 
-HTML5推出了`<track>`标签，支持[WebVTT](https://developer.mozilla.org/en-US/docs/Web/API/Web_Video_Text_Tracks_Format) 格式的音轨文本。
+HTML5推出了`<track>`标签，支持[WebVTT](https://developer.mozilla.org/en-US/docs/Web/API/Web_Video_Text_Tracks_Format) 格式的音轨文本，这个文本文件包含了众多的字符串，这些字符串会带有一些元数据，它们可以用来描述这个字符串将会在视频中显示的时间。可以文本里来修改字幕的样式及定位信息,也可以用css 代替。
+
+```
+WEBVTT
+
+STYLE
+::cue {
+  background-image: linear-gradient(to bottom, dimgray, lightgray);
+  color: papayawhip;
+}
+/* Style blocks cannot use blank lines nor "dash dash greater than" */
+
+NOTE comment blocks can be used between style blocks.
+
+STYLE
+::cue(b) {
+  color: peachpuff;
+}
+
+00:00:00.000 --> 00:00:10.000
+- Hello <b>world</b>.
+
+NOTE style blocks cannot appear after the first cue.
+```
 
 
 
+#### track标签
 
+`<track>` 标签需放在 `<audio>` 或 `<video> 标签当中`，同时需要放在所有 <source> 标签之后。
 
+* src 用来连接.vtt 文件
+* kind属性来指明是哪一种类型
+  * subtitles -通过添加翻译字幕，来帮助那些听不懂外国语言的人们理解音频当中的内容。
+  * captions -同步翻译对白，或是描述一些有重要信息的声音，来帮助那些不能听音频的人们理解音频中的内容。
+  * descriptions - 视频内容的文本描述,适用于失明用户或者当视频不可见的场景。
+  *  srclang- 告诉浏览器你是用什么语言来编写的 subtitles
+  *  label 显示在字幕选择列表里面
+
+```html
+<video controls>
+    <source src="example.mp4" type="video/mp4">
+    <source src="example.webm" type="video/webm">
+    <track label="English" kind="subtitles" src="subtitles_en.vtt" srclang="en">
+</video>
+```
+
+## 从对象到iframe - 其他嵌入技术
