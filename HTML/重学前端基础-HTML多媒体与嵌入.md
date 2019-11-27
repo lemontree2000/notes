@@ -2,7 +2,7 @@
 
 
 
-# 目录
+## 目录
 
 * HTML中的图片-img
 
@@ -252,3 +252,94 @@ NOTE style blocks cannot appear after the first cue.
 ```
 
 ## 从对象到iframe - 其他嵌入技术
+
+90年代中期至90年代后期，使用**框架**创建网站 — 网站的一小部分存储于单独的HTML页面中，这样有利于下载速度 —尤其是在那时网络连接速度太慢的情况下更为明显。然而，这些技术有很多问题，随着网络速度越来越快，这些技术带来的问题远超过它们带来的积极因素。
+
+#### Iframe详解
+
+iframe元素旨在允许您将其他Web文档嵌入到当前文档中，常用于评论系统，在线地图提供商，广告横幅、视频等。
+
+```html
+<iframe src="https://developer.mozilla.org/en-US/docs/Glossary"
+        width="100%" height="500" frameborder="0"
+        allowfullscreen sandbox>
+  <p> <a href="https://developer.mozilla.org/en-US/docs/Glossary">
+    Fallback link for browsers that don't support iframes
+  </a> </p>
+</iframe>
+```
+
+##### 属性
+
+* allowfullscreen-iframe全屏模式
+* frameborder-iframe绘制边框(0删除边框,不推荐这样设置)
+* src -URL路径
+*   width 和 height-指定iframe的宽度和高度。
+*   sandbox-该属性可以提高安全性设置,更现代的浏览器上才能工作（例如IE 10及更高版本）
+*   备选内容-与video等其他类似元素相同
+
+##### 安全隐患
+
+> [单击劫持](https://en.wikipedia.org/wiki/Clickjacking)是一种常见的iframe攻击，黑客将隐藏的iframe嵌入到您的文档中（或将您的文档嵌入到他们自己的恶意网站），并使用它来捕获用户的交互。这是误导用户或窃取敏感数据的常见方式。
+
+如何再使用iframe时更安全
+
+* 只有在必要时嵌入
+* 使用 HTTPS
+
+  * HTTPS减少了远程内容在传输过程中被篡改的机会，
+  * HTTPS防止嵌入式内容访问您的父文档中的内容，反之亦然。
+* 始终使用`sandbox`属性
+
+  * 没有使用sandbox属性，iframe里面的内容可执行JavaScript，提交表单，弹出窗口等
+  * 没有参数的`sandbox`属性来强制执行所有可用的限制
+  * *永远不*应该同时添加`allow-scripts`和`allow-same-origin`到你的`sandbox`属性中-在这种情况下，嵌入式内容可以绕过阻止站点执行脚本的同源安全策略，并使用JavaScript完全关闭沙盒
+* 配置CSP指令
+  * [CSP](https://developer.mozilla.org/en-US/docs/Glossary/CSP)代表**内容安全策略**，它提供一组HTTP标头
+  * *将服务器配置为发送适当的[X-Frame-Options](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options)  标题。*
+  * deny 不允许任何iframe加载、sameorigin允许相同域加载iframe
+
+
+
+
+#### embed和object元素
+
+embed和object元素的功能不同于`<iframe>`—— 这些元素是用来嵌入多种类型的外部内容的通用嵌入工具，其中包括像Java小程序和Flash，PDF（可在浏览器中显示为一个PDF插件）这样的插件技术，甚至像视频，SVG和图像的内容！
+
+> **注意**：**插件**是一种对浏览器原生无法读取的内容提供访问权限的软件。
+
+|                                                              | embed                        | object                                                       |
+| ------------------------------------------------------------ | ---------------------------- | ------------------------------------------------------------ |
+| 嵌入内容的[网址](https://developer.mozilla.org/en-US/docs/Glossary/URL) | `src`                        | `data`                                                       |
+| 嵌入内容的*准确*[媒体类型](https://developer.mozilla.org/en-US/docs/Glossary/MIME_type) | `type`                       | `type`                                                       |
+| 由插件控制的框的高度和宽度（以CSS像素为单位）                | `height`      `width`        | `height`      `width`                                        |
+| 名称和值，将插件作为参数提供                                 | 具有这些名称和值的ad hoc属性 | 单标签[``](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/param)元素，包含在内`<object>` |
+| 独立的HTML内容作为不可用资源的回退                           | 不支持（`<noembed>`已过时）  | 包含在元素`<object>`之后`<param>`                            |
+
+使用embed元素嵌入Flash影片
+
+```html
+<embed src="whoosh.swf" quality="medium"
+       bgcolor="#ffffff" width="550" height="400"
+       name="whoosh" align="middle" allowScriptAccess="sameDomain"
+       allowFullScreen="false" type="application/x-shockwave-flash"
+       pluginspage="http://www.macromedia.com/go/getflashplayer">
+```
+
+使用object元素嵌入PDF,嵌入PDF难以在小屏幕上阅读，最好是用链接指向它们
+
+```html
+<object data="mypdf.pdf" type="application/pdf"
+        width="800" height="1200" typemustmatch>
+  <p>You don't have a PDF plugin, but you can <a href="myfile.pdf">download the PDF file.</a></p>
+</object>
+```
+
+现有标准HTML5已经可以轻松完成多媒体需求了。
+
+## 在网页中添加矢量图形
+
+
+
+## 自适应图片
+
