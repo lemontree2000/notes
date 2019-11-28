@@ -6,20 +6,7 @@
 
 * HTML中的图片-img
 
-  * 属性
-
-    * src
-    * alt
-    * width&height
-    * title
-    
-  *  figure
-  
-  * CSS 背景图片
-  
 * 视频和音频内容
-  
-  * 安装
   
 * 从`<object>`到`<iframe>` -其他嵌入技术
 
@@ -339,7 +326,208 @@ embed和object元素的功能不同于`<iframe>`—— 这些元素是用来嵌�
 
 ## 在网页中添加矢量图形
 
+### 什么是矢量图形？
 
+- 位图使用像素网格来定义 — 一个位图文件精确得包含了每个像素的位置和它的色彩信息。流行的位图格式包括 Bitmap (`.bmp`), PNG (`.png`), JPEG (`.jpg`), and GIF (`.gif`.)
+- 矢量图使用算法来定义 — 一个矢量图文件包含了图形和路径的定义，电脑可以根据这些定义计算出当它们在屏幕上渲染时应该呈现的样子。 [SVG](https://developer.mozilla.org/en-US/docs/Glossary/SVG) 格式可以让我们创造用于 Web 的精彩的矢量图形。
+
+### SVG是什么？
+
+[SVG](https://developer.mozilla.org/zh-CN/docs/Web/SVG) 是用于描述矢量图像的[XML](https://developer.mozilla.org/en-US/docs/Glossary/XML)语言
+
+```html
+<svg version="1.1"
+     baseProfile="full"
+     width="300" height="200"
+     xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="black" />
+  <circle cx="150" cy="100" r="90" fill="blue" />
+</svg>
+```
+
+### SVG的优缺点
+
+优点
+
+* 矢量图像中的文本仍然可访问（这也有利于 [SEO](https://developer.mozilla.org/en-US/docs/Glossary/SEO))）。
+* SVG 可以很好地适应样式/脚本，因为图像的每个组件都是可以通过CSS或通过JavaScript编写的样式的元素。
+
+缺点
+
+* SVG非常容易变得复杂，这意味着文件大小会增加; 复杂的SVG也会在浏览器中占用很长的处理时间。
+* SVG可能比栅格图像更难创建，具体取决于您尝试创建哪种图像。
+* 旧版浏览器不支持SVG，因此如果您需要在网站上支持旧版本的 IE，则可能不适合（SVG从IE9开始得到支持）。
+
+### 将SVG添加到页面
+
+#### 通过 img 元素嵌入SVG
+
+```html
+<img 
+    src="equilateral.svg" 
+    alt="triangle with all three sides equal"
+    height="87px"
+    width="100px" />
+```
+
+优点
+
+* 快速，熟悉的图像语法与`alt`属性中提供的内置文本等效。
+* 可以通过在a元素嵌套`<img>`，使图像轻松地成为超链接。
+
+缺点
+
+* 无法使用JavaScript操作图像。
+* 如果要使用CSS控制SVG内容，则必须在SVG代码中包含内联CSS样式。 （从SVG文件调用的外部样式表不起作用）
+* 不能用CSS伪类来重设图像样式（如`:focus`）。
+
+#### 跨浏览器支持
+
+​	对于不支持SVG（IE 8及更低版本，Android 2.3及更低版本）的浏览器，您可以从`src`属性引用PNG或JPG，并使用`srcset`属性 只有最近的浏览器才能识别）来引用SVG。
+
+```html
+<img src="equilateral.png" alt="triangle with equal sides" srcset="equilateral.svg">
+```
+
+#### 通过css嵌入SVG
+
+```css
+background: url("fallback.png") no-repeat center;
+background-image: url("image.svg");
+background-size: contain;
+```
+
+#### 在HTML中引入SVG代码
+
+```html
+<svg width="300" height="200">
+    <rect width="100%" height="100%" fill="green" />
+</svg>
+```
+
+优点
+
+- 将 SVG 内联减少 HTTP 请求，可以减少加载时间。
+- 您可以为 SVG 元素分配`class`和`id`，并使用 CSS 修改样式，无论是在SVG中，还是 HTML 文档中的 CSS 样式规则。 实际上，您可以使用任何 [SVG外观属性](https://developer.mozilla.org/zh-CN/docs/Web/SVG/Attribute#Presentation_attributes) 作为CSS属性。
+- 内联SVG是唯一可以让您在SVG图像上使用CSS交互（如`:focus`）和CSS动画的方法（即使在常规样式表中）。
+- 您可以通过将 SVG 标记包在[``](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/a)元素中，使其成为超链接。
+
+缺点
+
+- 这种方法只适用于在一个地方使用的SVG。多次使用会导致资源密集型维护（resource-intensive maintenance）。
+- 额外的 SVG 代码会增加HTML文件的大小。
+- 浏览器不能像缓存普通图片一样缓存内联SVG。
+- 您可能会在[`<foreignObject>`](https://developer.mozilla.org/zh-CN/docs/Web/SVG/Element/foreignObject) 元素中包含回退，但支持 SVG 的浏览器仍然会下载任何后备图像。你需要考虑仅仅为支持过时的浏览器，而增加额外开销是否真的值得。
+
+#### 使用 [`iframe`](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/iframe) 嵌入SVG
+
+```html
+<iframe src="triangle.svg" width="500" height="500" sandbox>
+    <img src="triangle.png" alt="Triangle with three unequal sides" />
+</iframe>
+```
+
+这是不推荐的。
+
+缺点：
+
+- 如你所知， `iframe`有一个回退机制，如果浏览器不支持`iframe`，则只会显示回退。
+- 此外，除非 SVG 和您当前的网页具有相同的 [origin](https://developer.mozilla.org/en-US/docs/Glossary/origin)，否则你不能在主页面上使用 JavaScript 来操纵 SVG。
 
 ## 自适应图片
 
+#### 为什么要用自适应的图片？
+
+图片在不同屏幕尺寸的设备上，表现不一致，导致无法暂时一些图片的重要信息，在不同的屏幕下使用了相同分辨率的图片，造成带宽的浪费。
+
+#### 创建自适应的图片
+
+使用`srcset`和`sizes`
+
+```html
+<img srcset="elva-fairy-320w.jpg 320w,
+             elva-fairy-480w.jpg 480w,
+             elva-fairy-800w.jpg 800w"
+     sizes="(max-width: 320px) 280px,
+            (max-width: 480px) 440px,
+            800px"
+     src="elva-fairy-800w.jpg" alt="Elva dressed as a fairy">
+```
+
+**srcset**定义了我们允许浏览器选择的图像集，以及每个图像的大小
+
+* 一个**文件名** (`elva-fairy-480w.jpg`.)
+* 一个空格
+* **图像的固有宽度**（以像素为单位）这是图像的真实大小,而不是你预计的`px`
+
+**sizes**定义了一组媒体条件（例如屏幕宽度）并且指明当某些媒体条件为真时，什么样的图片尺寸是最佳选择
+
+* 一个**媒体条件**（`(max-width:480px)`）
+* 一个空格
+* 当媒体条件为真时，图像将填充的**槽的宽度**（`440px`）
+
+浏览器执行过程
+
+1. 查看设备宽度
+2. 检查`sizes`列表中哪个媒体条件是第一个为真
+3. 查看给予该媒体查询的槽大小
+4. 加载`srcset`列表中引用的最接近所选的槽大小的图像
+
+老旧的浏览器不支持这些特性，它会忽略这些特征。并继续正常加载 `src`属性引用的图像文件。
+
+#### 开发工具
+
+firefox(*Tools > Web Developer > Responsive Design View）*
+
+> **注意**: 在 Chrome 中测试时，通过如下方式禁用缓存：打开 DevTools 
+> ，并选中 Settings > Preferences > Network下Disable cache的选择框。否则，Chrome 
+> 会优先选择缓存图片而不是恰好适配的那个。
+
+#### 分辨率切换: 相同的尺寸, 不同的分辨率
+
+你可以让浏览器通过`srcset`和x语法结合来选择适当分辨率的图片。
+
+```html
+<img srcset="elva-fairy-320w.jpg,
+             elva-fairy-480w.jpg 1.5x,
+             elva-fairy-640w.jpg 2x"
+     src="elva-fairy-640w.jpg" alt="Elva dressed as a fairy">
+```
+
+
+
+#### 使用picture代替img
+
+```html
+<picture>
+  <source media="(max-width: 799px)" srcset="elva-480w-close-portrait.jpg">
+  <source media="(min-width: 800px)" srcset="elva-800w.jpg">
+  <img src="elva-800w.jpg" alt="Chris standing up holding his daughter Elva">
+</picture>
+```
+
+这样的代码允许我们在宽屏和窄屏上都能显示合适的图片。
+
+-  `<source>`元素包含一个`media`属性，这一属性包含一个媒体条件——就像第一个`srcset`例子，这些条件来决定哪张图片会显示——第一个条件返回真，那么就会显示这张图片。在这种情况下，如果视窗的宽度为799px或更少，第一个`<source>`元素的图片就会显示。如果视窗的宽度是800px或更大，就显示第二张图片。
+- `srcset`属性包含要显示图片的路径。请注意，正如我们在`<img>`上面看到的那样，`<source>`可以使用引用多个图像的`srcset`属性，还有`sizes`属性。所以你可以通过一个 `<picture>`元素提供多个图片，不过也可以给每个图片提供多分辨率的图片。实际上，你可能不想经常做这样的事情。
+- 在任何情况下，你都必须在 `</picture>`之前正确提供一个`<img>`元素以及它的`src`和`alt`属性，否则不会有图片显示。当媒体条件都不返回真的时候（你可以在这个例子中删除第二个`<source>` 元素），它会提供图片；如果浏览器不支持 `<picture>`元素时，它可以作为后备方案。
+
+> **注意**: 你应该仅仅当在美术设计场景下使用media属性；当你使用media时，不要在sizes属性中也提供媒体条件。
+
+##### 为什么我们不能使用 CSS 或 JavaScript 
+
+当浏览器开始加载一个页面, 它会在主解析器开始加载和解析页面的 CSS 和 JavaScript 之前先下载 (预加载) 任意的图片。
+
+`<picture>`让我们能继续满足老式浏览器的需要。你可以在`type`属性中提供MIME类型，这样浏览器就能立即拒绝其不支持的文件类型：
+
+```html
+<picture>
+  <source type="image/svg+xml" srcset="pyramid.svg">
+  <source type="image/webp" srcset="pyramid.webp"> 
+  <img src="pyramid.png" alt="regular pyramid built from four equilateral triangles">
+</picture>
+```
+
+- 不要使用`media`属性，除非你也需要美术设计。
+- 在`<source>` 元素中，你只可以引用在`type`中声明的文件类型。
+- 像之前一样，如果必要，你可以在`srcset`和`sizes`中使用逗号分割的列表。
