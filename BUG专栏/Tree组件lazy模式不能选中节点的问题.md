@@ -260,4 +260,3 @@ export default {
 ![](https://github.com/lemontree2000/blog-note-image/blob/master/images/2019-12-12-bug%E4%B8%93%E6%A0%8F-element-ui%20tree6.gif?raw=true)
 
 至此，这个问题就彻底搞定了，在线demo地址：[点击](<https://codepen.io/lemontree2000/pen/VwYeavR>)
-
